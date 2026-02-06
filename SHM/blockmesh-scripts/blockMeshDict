@@ -1,0 +1,174 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  5                                     |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+lx 24.0;
+ly 6.0;
+lz #eval{18.0};
+lSed #eval{3.0};
+
+pierWidth #eval{2.0};
+pierNose #eval{2.0};
+pierTotalLength #eval{12.0};
+pierStartX #eval{5.0};
+
+X1 #eval{0.0};
+X2 #eval{$X1+$pierStartX};
+X3 #eval{$X1+$pierStartX+$pierNose};
+X4 #eval{$X1+$pierStartX+$pierNose+($pierTotalLength-2.0*$pierNose)};
+X5 #eval{$X4+$pierNose};
+X6 #eval{1.0*$lx};
+Y1 #eval{0.0};
+Y2 #eval{$Y1+$pierNose};
+Y3 #eval{1.0*$ly};
+
+deltaCell 0.50;
+
+nx #eval {round($lx/$deltaCell)};
+ny #eval {round($ly/$deltaCell)};
+// nz #eval round($lz/$deltaCell);
+nzWater #eval {63.0};
+nzSed #eval {20.0};
+nz #eval {round($nzWater+$nzSed)};
+nx1 #eval {round(($X2-$X1)/$deltaCell)};
+nx2 #eval {round(($X3-$X1)/$deltaCell)};
+nx3 #eval {round(($X4-$X3)/$deltaCell)};
+nx4 #eval {round(($X6-$X5)/$deltaCell)};
+nx5 #eval {round(($X6-$X4)/$deltaCell)};
+ny1 #eval {round(($Y2-$Y1)/$deltaCell)};
+ny2 #eval {round(($Y3-$Y2)/$deltaCell)};
+
+fracNSed #eval {($nzSed/($nzWater+$nzSed))};
+fracNWater #eval {(1.0-$fracNSed)};
+fracLSed #eval {($lSed/$lz)};
+fracLWater #eval {(1.0-$fracLSed)};
+// expRatTop #eval 1.031673081;
+expRatTop #eval {(0.8/0.03)};
+expRatBottom #eval {0.03/0.4};
+
+convertToMeters 1;
+
+vertices
+(
+    // bottom
+    ($X1 $Y1 0) // 0
+    ($X2 $Y1 0) // 1
+    ($X3 $Y2 0) // 2 
+    ($X4 $Y2 0) // 3
+    ($X5 $Y1 0) // 4
+    ($X6 $Y1 0) // 5
+    ($X6 $Y2 0) // 6
+    ($X6 $Y3 0) // 7
+    ($X4 $Y3 0) // 8
+    ($X3 $Y3 0) // 9
+    ($X1 $Y3 0) // 10
+    ($X1 $Y2 0) // 11
+
+    // top
+    ($X1 $Y1 $lz) // 12
+    ($X2 $Y1 $lz) // 13
+    ($X3 $Y2 $lz) // 14
+    ($X4 $Y2 $lz) // 15
+    ($X5 $Y1 $lz) // 16
+    ($X6 $Y1 $lz) // 17
+    ($X6 $Y2 $lz) // 18
+    ($X6 $Y3 $lz) // 19
+    ($X4 $Y3 $lz) // 20
+    ($X3 $Y3 $lz) // 21
+    ($X1 $Y3 $lz) // 22
+    ($X1 $Y2 $lz) // 23
+);
+
+blocks
+(
+    hex (0 1 2 11 12 13 14 23) ($nx2 $ny1 $nz) // hex 1
+    simpleGrading 
+    (
+        1                  // x-direction expansion ratio
+        1
+        (
+            ($fracLSed $fracNSed $expRatBottom)    // 20% z-dir, 30% cells, expansion = 4
+            ($fracLWater $fracNWater $expRatTop)
+            // ($fracLSed $fracNSed 1)    // 20% z-dir, 30% cells, expansion = 4
+            // ($fracLWater $fracNWater 1)
+        )                  // z-direction expansion ratio
+    )
+
+    hex (11 2 9 10 23 14 21 22) ($nx2 $ny2 $nz) // hex 2
+    simpleGrading 
+    (
+        1                  // x-direction expansion ratio
+        1
+        (
+            ($fracLSed $fracNSed $expRatBottom)    // 20% z-dir, 30% cells, expansion = 4
+            ($fracLWater $fracNWater $expRatTop)
+            // ($fracLSed $fracNSed 1)    // 20% z-dir, 30% cells, expansion = 4
+            // ($fracLWater $fracNWater 1)
+        )                  // z-direction expansion ratio
+    )
+
+    hex (2 3 8 9 14 15 20 21) ($nx3 $ny2 $nz) // hex 3
+    simpleGrading 
+    (
+        1                  // x-direction expansion ratio
+        1
+        (
+            ($fracLSed $fracNSed $expRatBottom)    // 20% z-dir, 30% cells, expansion = 4
+            ($fracLWater $fracNWater $expRatTop)
+            // ($fracLSed $fracNSed 1)    // 20% z-dir, 30% cells, expansion = 4
+            // ($fracLWater $fracNWater 1)
+        )                  // z-direction expansion ratio
+    )
+
+    hex (3 6 7 8 15 18 19 20) ($nx5 $ny2 $nz) // hex 4
+    simpleGrading 
+    (
+        1                  // x-direction expansion ratio
+        1
+        (
+            ($fracLSed $fracNSed $expRatBottom)    // 20% z-dir, 30% cells, expansion = 4
+            ($fracLWater $fracNWater $expRatTop)
+            // ($fracLSed $fracNSed 1)    // 20% z-dir, 30% cells, expansion = 4
+            // ($fracLWater $fracNWater 1)
+        )                  // z-direction expansion ratio
+    )
+
+    hex (4 5 6 3 16 17 18 15) ($nx5 $ny1 $nz) // hex 5
+    simpleGrading 
+    (
+        1                  // x-direction expansion ratio
+        1
+        (
+            ($fracLSed $fracNSed $expRatBottom)    // 20% z-dir, 30% cells, expansion = 4
+            ($fracLWater $fracNWater $expRatTop)
+            // ($fracLSed $fracNSed 1)    // 20% z-dir, 30% cells, expansion = 4
+            // ($fracLWater $fracNWater 1)
+        )                  // z-direction expansion ratio
+    )
+);
+
+edges
+(
+);
+
+boundary
+(
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //

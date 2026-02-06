@@ -1,0 +1,35 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| OpenFOAM: refineMeshDict                                                   |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      refineMeshDict;
+}
+
+// Cells to refine; name of 'cellSet'
+set             refineCells;
+
+// Coordinate system definition
+coordinateSystem global;
+
+// Define tan1/tan2; the normal is calculated as tan1^tan2
+globalCoeffs
+{
+    tan1    (1 0 0);   // x
+    tan2    (0 1 0);   // y
+}
+
+// Refine only in these directions (NO 'normal' => no z refinement)
+directions
+(
+    tan1
+    tan2
+);
+
+// IMPORTANT: useHexTopology=yes forces 2x2x2 splitting; so keep it NO
+useHexTopology  no;  //  :contentReference[oaicite:2]{index=2}
+geometricCut    no;
+writeMesh       no;
