@@ -1,0 +1,27 @@
+FoamFile
+{
+    version 2.0;
+    format ascii;
+    class dictionary;
+    object refineMeshDict;
+}
+
+// set name will be edited per step
+set regionB;
+
+coordinateSystem global;
+
+globalCoeffs
+{
+    tan1 (1 0 0);  // x
+    tan2 (0 1 0);  // y  => normal = z
+}
+
+directions
+(
+    normal          // refine ONLY in z
+);
+
+useHexTopology  no;   // must be NO for directional refinement
+geometricCut    no;
+writeMesh       no;

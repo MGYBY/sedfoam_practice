@@ -1,0 +1,91 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      funkySetFieldDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+expressions
+(
+  solid
+  {
+    field alpha.solid;
+    keepPatches true;
+    expression "pos().z<sedH*1.050 && pos().z>0.0 ? 0.5*sedConc*(1.0+tanh((1.0/cellSizeMod)*(pos().z-1.0*sedH))) : 0.0";
+    variables (
+      "nd=13.5322;"
+      "nv=0.57609;"
+      "sedH=3.0;"
+      "cellSizeMod=0.40/8.0/2.0;"
+      "sedConc=0.60;"
+    );
+  }
+
+  fluid
+  {
+    field gamma;
+    keepPatches true;
+    expression "pos().z<=(nd+sedH) ? 1.0 : 0.0";
+    variables (
+      "nd=13.5322;"
+      "nv=0.57609;"
+      "sedH=3.0;"
+      "cellSizeMod=0.40/8.0/2.0;"
+      "sedConc=0.60;"
+    );
+  }
+
+  velocityFluidGas
+  {
+    field U.gas;
+    keepPatches true;
+    expression "pos().z>sedH ? nv*vector(1,0,0) : 0.0*vector(1,0,0)";
+    variables (
+      "nd=13.5322;"
+      "nv=0.57609;"
+      "sedH=3.0;"
+      "cellSizeMod=0.40/8.0/2.0;"
+      "sedConc=0.60;"
+    );
+  }
+
+  velocityFluidWater
+  {
+    field U.water;
+    keepPatches true;
+    expression "pos().z>sedH ? nv*vector(1,0,0) : 0.0*vector(1,0,0)";
+    variables (
+      "nd=13.5322;"
+      "nv=0.57609;"
+      "sedH=3.0;"
+      "cellSizeMod=0.40/8.0/2.0;"
+      "sedConc=0.60;"
+    );
+  }
+
+  velocityFluidFluid
+  {
+    field U.fluid;
+    keepPatches true;
+    expression "pos().z>sedH ? nv*vector(1,0,0) : 0.0*vector(1,0,0)";
+    variables (
+      "nd=13.5322;"
+      "nv=0.57609;"
+      "sedH=3.0;"
+      "cellSizeMod=0.40/8.0/2.0;"
+      "sedConc=0.60;"
+    );
+  }
+);
+
+// ************************************************************************* //

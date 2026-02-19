@@ -1,0 +1,46 @@
+FoamFile
+{
+    version 2.0;
+    format ascii;
+    class dictionary;
+    object topoSetDict;
+}
+
+actions
+(
+    // Region A
+    {
+        name    regionA;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        sourceInfo
+        {
+            box (-40 0 0) (24 8 6);
+        }
+    }
+
+    // Region B
+    {
+        name    regionB;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        sourceInfo
+        {
+            box (-40 0 1) (24 8 5);
+        }
+    }
+
+    // Region C
+    {
+        name    regionC;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        sourceInfo
+        {
+            box (-40 0 2) (24 8 4);
+        }
+    }
+);
