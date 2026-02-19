@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# create input file from 1D computation for funkySetFields
+# mkdir 1d_profil
+# python3 -c "import fluidfoam; fluidfoam.create1dprofil('1D', '.', '1000', 'Y', ['U.a', 'U.b', 'alpha.a', 'k.b', 'p_rbgh', 'omega.b', 'Theta'])"
+
+# create the mesh
+# blockMesh
+
+# create the intial time folder
+cp -r 0_org 0
+
+# ccmToFoam mesh_sed_mesh_ext.ccm
+
+topoSet 
+refineMesh -dict system/refineMeshDict_regA -overwrite
+topoSet 
+refineMesh -dict system/refineMeshDict_regB -overwrite
+topoSet 
+refineMesh -dict system/refineMeshDict_regC -overwrite
+# exit
+
+# Initialize the alpha field
+funkySetFields -time 0
+# exit
+
+# Decompose the case in order to run in parallel (on 4 cores)
+decomposePar
+
+# Run sedFoam in parallel
+mpirun --oversubscribe -np 12 sedInterFoam -parallel # > log&
