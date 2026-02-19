@@ -1,0 +1,92 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.4.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    location    "0";
+    object      Uw;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    #includeEtc "caseDicts/setConstraintTypes"
+
+    Inlet
+    {
+        type            groovyBC;
+        value           uniform (0 0 0);
+        valueExpression "(pos().z>sedH) ? nv*vector(1,0,0) : 0.0*vector(1,0,0)";
+        // valueExpression "(nv)*vector(1,0,0)";
+        variables (
+            "nd=13.5322;"
+            "nv=0.57609;"
+            "sedH=3.0;"
+            "cellSizeMod=0.40/8.0/2.0;"
+            "sedConc=0.60;"
+        );
+    }
+
+    Outlet
+    {
+        // original BC setup here
+        // type    zeroGradient;
+        // mud-flow setup here
+        // type            inletOutlet;
+        // inletValue      uniform (0 0 0);
+        // value           uniform (0 0 0);
+
+        type            zeroGradient;//fixedValue;fixedValue;
+        value           uniform (0 0 0);
+
+        // type            outletPhaseMeanVelocity;
+        // UnMean          1.0;
+        // alpha           alpha.water;
+    }
+
+    Back
+    {
+        type    zeroGradient;
+        // type    slip;
+    }
+
+    Bottom
+    {
+        // type            noSlip;
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    Cylinder
+    {
+        // type            noSlip;
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    Atmosphere
+    {
+        type            pressureInletOutletVelocity;
+        value           uniform (0 0 0);
+        //         type          zeroGradient;
+    }
+
+    Symmetry
+    {
+        type            symmetryPlane;
+    }
+}
+
+
+// ************************************************************************* //
